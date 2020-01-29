@@ -1,3 +1,9 @@
+//* 
+1. Create 2 or more moving balls in real-time using threads in C#;
+2. Show the output of different words or parts of text with threads in real-time;
+3. Create several clocks to show different time with multithreading.
+*//
+
 
 Balls:
 
