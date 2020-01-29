@@ -1,0 +1,13 @@
+User Manual:
+
+1. Log in to the console (enter one of the names: Leontovych or Lysenko and password qwerty5678).
+
+2. Select one of four possible actions by entering a number from 1 to 4 in the console.
+
+3. For the "Kick out a student" action, enter the number of the student you want to expel.
+
+4. For the "Choose a class monitor" action, enter the minimum characteristics that the headman must possess.
+   For example, for the query "Class monitors honesty must be at least" we enter 4. This will mean that the student will be selected from students with experience greater than 4 units (units).
+   Similarly for "honesty" and "leadskills" queries. For "laziness" we enter 6, which means that the laziness of old age should be less than 6 ppm.
+   Note: If several students are applying for the seniority position, the program proposes to move on to the second round and re-enter the criteria for selection of seniority. The main thing is not to overdo it)
+© 2020 GitHub, Inc.
