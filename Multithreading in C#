@@ -1,0 +1,329 @@
+
+Balls:
+
+public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            this.SetStyle(ControlStyles.UserPaint, true);
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            this.SetStyle(ControlStyles.ResizeRedraw, true);
+            AnimateBall();
+        }
+
+        private int x = 5, y = 5, a = 4, b = 2;
+        private Button suspend = new Button();
+        private Button resume = new Button();
+        private Button abort = new Button();
+        Thread t, p;
+
+        public void AnimateBall()
+        {
+            BackColor = Color.White;
+            abort.Text = "Зупинити";
+            suspend.Text = "Пауза";
+            resume.Text = "Продовжити";
+
+            int w = 20;
+            suspend.Location = new Point(w*3, 200);
+            resume.Location = new Point(w += 200 + suspend.Width, 200);
+            abort.Location = new Point(w += 200 + resume.Width, 200);
+
+            abort.Click += new EventHandler(Abort_Click);
+            suspend.Click += new EventHandler(Suspend_Click);
+            resume.Click += new EventHandler(Resume_Click);
+
+            Controls.Add(suspend);
+            Controls.Add(resume);
+            Controls.Add(abort);
+
+            p = new Thread(new ThreadStart(Runn));
+            p.Start();
+            t = new Thread(new ThreadStart(Run));
+            t.Start();
+        }
+        protected void Abort_Click(object sender, EventArgs e)
+        {
+            t.Abort();
+            p.Abort();
+        }
+        protected void Suspend_Click(object sender, EventArgs e)
+        {
+            t.Suspend();
+            p.Suspend();
+        }
+        protected void Resume_Click(object sender, EventArgs e)
+        {
+            t.Resume();
+            p.Resume();
+        }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.FillEllipse(Brushes.Red, x, y, 20, 20);
+            base.OnPaint(e);
+            Graphics gg = e.Graphics;
+            gg.FillEllipse(Brushes.Blue, a, b, 20, 20);
+            base.OnPaint(e);
+        }
+        public void Run()
+        {
+            int dx = 3, dy = 2;
+            while (true)
+            {
+                int newball_x = x + dx, newball_y = y + dy;
+                if (newball_x < -5 || newball_x > ClientSize.Width)
+                {
+                    dx = -dx;
+                }
+                if (newball_y < 0 || newball_y > ClientSize.Height)
+                {
+                    dy = -dy;
+                }
+                x += dx;
+                y += dy;
+                Invalidate();
+                Thread.Sleep(9);
+            }
+        }
+
+        public void Runn()
+        {
+            int dx = 2, dy = 3;
+            while (true)
+            {
+                int newball_a = a + dx, newball_b = b + dy;
+                if (newball_a < -5 || newball_a > ClientSize.Width)
+                {
+                    dx = -dx;
+                }
+                if (newball_b < 0 || newball_b > ClientSize.Height)
+                {
+                    dy = -dy;
+                }
+                a += dx;
+                b += dy;
+                Invalidate();
+                Thread.Sleep(9);
+            }
+        }
+    }
+
+
+Clocks:
+
+public partial class Form1 : Form
+    {
+        System.Windows.Forms.Timer t = new System.Windows.Forms.Threading.Timer();
+        System.Windows.Forms.Timer p = new System.Windows.Forms.Threading.Timer();
+
+        public Form1()
+        {    
+            InitializeComponent();
+        }
+        
+        private void t_Tick(object sender, EventArgs e)
+        {           
+            int hh = DateTime.Now.Hour;
+            int mm = DateTime.Now.Minute;
+            int ss = DateTime.Now.Second;
+            string time = "";
+            
+            if (hh < 10)
+            {
+                time += "0" + hh;
+            }
+            else
+            {
+                time += hh;
+            }
+            time += ":";
+
+            if (mm < 10)
+            {
+                time += "0" + mm;
+            }
+            else
+            {
+                time += mm;
+            }
+            time += ":";
+
+            if (ss < 10)
+            {
+                time += "0" + ss;
+            }
+            else
+            {
+                time += ss;
+            }
+                        
+            label1.Text = time;
+        }
+        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            t.Interval = 1000;
+            t.Tick += new EventHandler(t_Tick);
+            t.Start();
+            
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            p.Interval = 1000;
+            p.Tick += new EventHandler(p_Tick);
+            p.Start();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            t.Dispose();
+        }
+    }
+
+
+PrintWords:
+
+    public partial class Form1 : Form
+    {
+        public static bool m = true;
+        Thread t1 = new Thread(new ParameterizedThreadStart(Run));
+        Thread t2 = new Thread(new ParameterizedThreadStart(Runn));
+
+        async static void Run(object textBox)
+        {
+            MethodInvoker mi = async delegate
+            {
+                TextBox tempTextBox = textBox as TextBox;
+                
+                for (int i = 0; i <= 50; i++)
+                {
+                    if (m)
+                    {
+                        int m = 3;
+                        TimeSpan interval = new TimeSpan(0, 0, m++);
+                        tempTextBox.Text += Environment.NewLine + script[i];
+                        tempTextBox.Update();
+                        await Task.Delay(interval);
+                    }
+                }
+                
+            };
+
+        }
+        async static void Runn(object textBox)
+        {
+            MethodInvoker mi = async delegate
+            {
+                TextBox tempTextBox = textBox as TextBox;
+                
+                for (int i = 0; i <= 50; i++)
+                {
+                    if (m)
+                    {
+                        int k = 4;
+                        TimeSpan interv = new TimeSpan(0, 0, k++);
+                        tempTextBox.Text += Environment.NewLine + scr[i];
+                        tempTextBox.Update();
+                        await Task.Delay(interv);
+                    }
+                }
+                
+            };
+        }
+        public Form1()
+        {
+            InitializeComponent();
+            Show();
+        }
+
+        async void button1_Click(object sender, EventArgs e)
+        {
+            t1.Start(textBox1);
+            t2.Start(textBox2);
+                        
+            for (int i = 0; i <= 50; i++)
+            {
+                if (m)
+                {
+                    int k = 4, m = 3;
+                    TimeSpan interval = new TimeSpan(0, 0, m++);
+                    textBox1.Text += Environment.NewLine + script[i];
+                    textBox1.Update();
+                    await Task.Delay(interval);
+                    TimeSpan interv = new TimeSpan(0, 0, k++);
+                    textBox2.Text += Environment.NewLine + scr[i];
+                    textBox2.Update();
+                    await Task.Delay(interv);
+                }
+            }
+            
+        }
+
+        public void button2_Click(object sender, EventArgs e)
+        {
+            if (m == true)
+            {
+                m = false;                
+                button2.Text = "Продовження роботи потоків і очищення тексту";                                              
+                
+            } else
+            {
+                m = true;
+                label1.Text = "";
+                button2.Text = "Зупинка роботи потоків і вивід тексту";
+                Thread t1 = new Thread(new ParameterizedThreadStart(Run));
+                Thread t2 = new Thread(new ParameterizedThreadStart(Runn));
+                textBox1.Update();
+                textBox2.Update();
+            }
+        }
+    }
+}
+    public class Clock
+    {
+        BackgroundWorker worker;
+        Label label;
+        int i;
+
+        public void Run()
+        {
+            worker.RunWorkerAsync();
+        }
+        public void Stop()
+        {
+            worker.CancelAsync();
+        }
+        public Clock(Label l)
+        {
+            worker = new BackgroundWorker();
+            worker.WorkerSupportsCancellation = true;
+            worker.ProgressChanged += Worker_ProgressChanged;
+            worker.DoWork += Worker_DoWork;
+            worker.WorkerReportsProgress = true;
+            label = l;
+        }
+
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                if (!((BackgroundWorker)sender).CancellationPending)
+                {
+                    worker.ReportProgress(i);
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+        }
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            label.Text = "Реве та стогне Дніпр широкий, сердитий вітер завива, додолу верби гне високі, горами хвилю підійма.";            
+        }
