@@ -1,3 +1,8 @@
+//* GROUP class contains an array of STUDENT class objects. The STUDENT class contains the student's last name, 
+record number, and an array of grades. Identify the necessary constructors, destructors, and methods for handling data elements. 
+Find the average score of each student. Display the names of the five students with the highest grade point average. *//
+
+
 #include <iostream>
 #include <conio.h>
 #include <string>
