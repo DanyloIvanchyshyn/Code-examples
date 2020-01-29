@@ -1,0 +1,248 @@
+#include <iostream>
+#include <cstdlib>
+#include <iomanip>
+#include <string>
+#include <cmath>
+using namespace std;
+
+class Point {
+protected:
+	double x, y;
+public:
+	Point (double x1 = 0, double y1 = 0) : x(x1), y(y1) {}
+	Point (const Point& tmp) : x(tmp.x), y(tmp.y) {}
+	~Point () {}
+
+	void SetX (double a) { x = a; }
+	void SetY (double b) { y = b; }
+	double GetX (void) const { return x; }
+	double GetY (void) const { return y; }
+
+	virtual void Move (double a, double b) {
+		x += a;
+		y += b;
+	}
+	Point& operator= (const Point& p) {
+		if (this == &p) return *this;
+		x = p.x;
+		y = p.y;
+		return *this;
+	}
+	bool operator== (const Point& p) {
+		if (x == p.GetX() && y == p.GetY())
+			return true;
+		else return false;
+	}
+	friend ostream& operator<< (ostream&, Point&);
+	friend istream& operator>> (istream&, Point&);
+	friend const Point operator/ (const Point, double);
+	friend const Point operator* (const Point, double);
+	friend const Point operator+ (const Point, const Point);
+	friend const Point operator- (const Point, const Point);
+};
+
+ostream& operator<< (ostream& os, Point& p) {
+	os << "X: " <<p.x << setw(8) << "Y: " << p.y;
+	return os;
+}
+istream& operator>> (istream& is, Point& p) {
+	cout << "Введiть X: ";
+	is >> p.x;
+	cout << "Введiть Y: ";
+	is >> p.y;
+	return is;
+}
+const Point operator*(const Point p, double t) {
+	return Point(t*p.x, t*p.y);
+}
+const Point operator/(const Point p, double t) {
+	return Point(p.x/t, p.y/t);
+}
+const Point operator+ (const Point p1, const Point p2) {
+	return Point(p1.x + p2.x, p1.y + p2.y);
+}
+const Point operator- (const Point p1, const Point p2) {
+	return Point(p1.x - p2.x, p1.y - p2.y);
+}
+
+
+class Circle : public Point {
+protected:
+	double r;
+public:
+	void CheckIfFits(Point p) {
+		if (pow(p.GetX(), 2) + pow(p.GetY(), 2) != r * r) exit(-1);
+	}
+	Circle (double radius = 1, double x1 = 0, double y1 = 1) : Point(x1,y1) {
+		if (radius < 0) exit(-2);
+		r = radius;
+	}
+	~Circle() {}
+
+	double GetR(void) const { return r; }
+	void output() {
+		cout << endl << "Координати центру i радiус: " << "(" << GetX() << ","<< GetY() << "), " << r << endl << endl;
+	}
+	virtual void Move (double a, double b) {
+		SetX(GetX() + a);
+		SetY(GetY() + b);
+	}
+    friend ostream& operator<< (ostream& os, Circle& c) {
+		os << "Radius: " <<c.r << " , (x0,y0): " << "("<< c.GetX() << "," << c.GetY() << ")" << endl;
+		return os;
+	}
+	friend istream& operator>> (istream& is, Circle& c) {
+		cout << "Введiть радiус кола, координати центра:" << endl;
+		is >> c.r >> c.x >> c.y;
+		return is;
+	}
+};
+
+class Sector : public Point {
+protected:
+	double r, start_phi, end_phi;
+public:
+	Sector(double radius, double s_phi, double e_phi, double x00 = 0, double y00 = 0) : Point(x00,y00) {
+		if (radius < 0) exit(-6);
+		r = radius;
+		start_phi = s_phi;
+		end_phi = e_phi;
+	}
+	~Sector() {}
+
+	void output() {
+		cout << endl << "Координати центра, радiус i кути: " << "(" << GetX() << "," << GetY() << "), " << r << ", " << start_phi << ", "<< end_phi << endl << endl;
+		cout << "Точки сектора:" <<  endl << endl;
+	}
+	friend istream& operator>> (istream& is, Sector& s) {
+		cout << "Введiть радус сектора, початковий i кiнцевий кути, координати центра:" << endl;
+		is >> s.r >> s.start_phi >> s.end_phi >> s.x >> s.y;
+		return is;
+	}
+	virtual void Move(float a, float b) {
+		SetX(GetX() + a);
+		SetY(GetY() + b);
+	}
+	void CheckIfFits(Point p) {
+		double phi = atan((p.GetY() - y) / (p.GetX() - x));
+		if ( sqrt( pow((p.GetX() - x), 2) + pow((p.GetY() - y), 2) ) <= r && phi <= end_phi && phi >= start_phi)  exit(-5);
+	}
+};
+
+class FigureOfCircles {
+	using T = Circle;
+private:
+	Circle* c;
+	int size;
+public:
+	class Iterator {
+	protected:
+		T* t;
+	public:
+		explicit Iterator (T* t1 = 0) : t(t1) { }
+		Iterator (const Iterator& x) : t(x.t)  {}
+		T& operator*() const { return *t; }
+		T* operator->() const { return t; }
+
+		Circle& operator[](std::ptrdiff_t n) { return t[n]; }
+		Iterator& operator++() { ++t; return *this; }
+		Iterator operator++(int) { return Iterator(t++); }
+
+		Iterator& operator--() { --t; return *this; }
+		Iterator operator--(int) { return Iterator(t--); }
+
+		Iterator operator- (int n) { return Iterator(t - n); }
+		Iterator operator+ (int n) { return Iterator(t - n); }
+
+		Iterator& operator-= (int n) { t -= n; return *this; }
+		Iterator& operator+= (int n) { t += n; return *this; }
+
+		bool operator== (const Iterator& x) const { return t == x.t; }
+		bool operator!= (const Iterator& x) const { return t != x.t; }
+		bool operator<= (const Iterator& x) const { return t <= x.t; }
+		bool operator> (const Iterator& x) const { return t > x.t; }
+		bool operator>= (const Iterator& x) const { return t >= x.t; }
+		bool operator< (const Iterator& x) const { return t < x.t; }
+		friend std::ptrdiff_t operator- (Iterator x, Iterator y) { return x.t - y.t; }
+
+		Iterator& operator= (const Iterator& x) {
+			if (t == x.t) exit(-6);
+			t = x.t;
+			return *this;
+		}
+	};
+
+	FigureOfCircles (int sz) : size(sz) {
+		c = new T[size];
+		for (Iterator i = begin(); i != end(); ++i) {
+			*i = T(i-begin()+1);
+			cin >> *i;
+		}
+	}
+	FigureOfCircles(const FigureOfCircles& f) {
+		size = f.size;
+		c = new T[size];
+		for (Iterator i = begin(); i != end(); ++i) *i = f.c[i - begin()];
+	}
+	~FigureOfCircles() { if (c) delete[] c; }
+
+	double DistSqrt(Point p1, Point p2) { 
+		return sqrt(pow((p1.GetX() - p2.GetX()), 2) + pow((p1.GetY() - p2.GetY()), 2));
+	}
+	int AreIntersected(Circle c1, Circle c2) {
+		if (DistSqrt(Point(c1.GetX(), c1.GetY()), Point(c2.GetX(), c2.GetY())) < c1.GetR() + c2.GetR())
+			return 1;
+		else return 0;
+	}
+	Iterator begin() { return Iterator(c); }
+	Iterator end() { return Iterator(c+size); }
+	friend double FindNumCrossing(FigureOfCircles);
+};
+
+double FindNumCrossing(FigureOfCircles f) {
+	double count = 0;
+	for (auto it1 = f.begin(); it1 != f.end(); ++it1)
+		for (auto it2 = it1 + 1; it2 != f.end(); ++it2)
+			count += f.AreIntersected(*it1, *it2);
+	return floor((count * 2 / (f.end() - f.begin())) + 0.5);
+}
+
+int main() {
+	setlocale(LC_ALL, "Ukrainian");
+	Point p1(1, 2);
+	Point p2(3, 4);
+	Point p3;
+	Point p4;
+	cin >> p4;
+	cout << p4 << endl;
+	p1.Move(2, 3);
+	cout << p1 << endl;
+	p3 = p2 + p1;
+	cout << p3 << endl;
+	p3 = p1 * 7;
+	cout << p3 << endl;
+	p3 = p1 / 2;
+	cout << p3 << endl;
+	p1 = p2;
+	cout << p1 << endl;
+	bool t = p3 == p1;
+	cout << t << endl;
+	Circle c1(2, 0, 0);
+	Circle c2(1, 0, 0);
+	c1.output();
+	c2.output();
+
+	Circle c3(5, 0, 1);
+	cout << "C3 before: " << c3 << endl;
+	Point& p = c3;
+	c3.Move(5, 6);
+	cout << "C3 after: " << c3 << endl;
+
+	FigureOfCircles f(6);
+	FigureOfCircles::Iterator i;
+	cout << endl;
+	for (i = f.begin(); i != f.end(); ++i) cout << *i << endl << endl;
+	cout << FindNumCrossing(f) << " - кластер з найбiльшою к-стю кiл, що перетинаються" << endl << endl;
+	system("pause");
+	return 0; 
+  }
