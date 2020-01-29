@@ -1,0 +1,99 @@
+I. The first task is to find the value of recurrent expression
+
+print("Введіть ПОЧАТКОВУ точку інтервалу:\n")
+x0 = float(input("x0 = "))
+print("")
+print("Далі введіть КІНЦЕВУ точку інтервалу:\n")
+x1 = float(input("x1 = "))
+print("")
+print("Далі введіть К-СТЬ ВІДРІЗКІВ інтервалу:\n")
+n = int(input("n = "))
+d=(x1-x0)/n
+
+def g(x):
+    if math.fabs(x)>=1 :
+        return (1+x**2+math.sqrt(math.fabs(math.sin(x))))/((math.sin(2*x**2)**2)+1)
+    else :
+        res=0
+        i=0
+        a=1
+        S=a
+        while i<=5 :
+            i+=1
+            R=x/i
+            a=a*R
+            S+=a
+        res+=S
+
+        i=1
+        a=x
+        S=a
+        while i<=6 :
+            i+=1
+            R=x/i
+            a=a*R
+            S+=a
+        res+=S
+        return res
+
+while x0<=x1 :
+    print("\n\n\tЗначення x:\t\tЗначення функції\n")
+    print("\t",round(x0,1),"\t\t\t",g(math.sqrt(x0)+1)-g(math.sqrt(x0)-1)+1 )
+    x0+=d
+print("")
+
+====================================================================================================================================
+
+II. The next task is to work with some while- and for- statements:
+
+print("Введіть x ще один раз\n")
+x = int(input("x = "))
+print("\nА тепер введіть y\n")
+y = int(input("y = "))
+x2=x
+y2=y
+i=1 
+print("\nЦикл while зі збільшенням:\n\n\n","Значення x:\t\t\tЗначення y:\t\t\tЗначення функції")
+if x==1 and y==1 :
+    print("     ",1,"\t\t\t   ",1,"\t\t\t      ",(1+(1+1)**(1/3))**0.25)
+    x+=i
+    y+=2*i 
+
+while y<=27 :
+    print("     ",x,"\t\t\t   ",y,"\t\t\t      ",(y+(x+1)**(1/3))**0.25)
+    x+=i
+    y+=3*i
+    
+
+x-=i
+y-=3*i  
+print("\n\n\nЦикл while зі зменшенням:\n\n\n","Значення x:\t\t\tЗначення y:\t\t\tЗначення функції")
+while y>=y2 :
+    print("     ",x,"\t\t\t   ",y,"\t\t\t      ",(y+(x+1)**(1/3))**0.25)
+    x-=i
+    y-=3*i    
+if y2==1 and x2==1:
+    print("     ",1,"\t\t\t   ",1,"\t\t\t      ",(1+(1+1)**(1/3))**0.25)
+
+
+
+print("\n\nЦикл for зі збільшенням:\n\n\n","Значення x:\t\t\tЗначення y:\t\t\tЗначення функції")
+if y2==1 and x2==1:
+    print("     ",1,"\t\t\t   ",1,"\t\t\t      ",(1+(1+1)**(1/3))**0.25)
+for y in range(1,28) :
+    if y % 3 == 0 and y>=y2 :
+        x1=x+i
+        print("     ",x1,"\t\t\t   ",y,"\t\t\t      ",(y+(x1+1)**(1/3))**0.25)
+        i+=1
+
+i=1  
+print("\n\nЦикл for зі зменшенням:\n\n\n","Значення x:\t\t\tЗначення y:\t\t\tЗначення функції")
+for y in list(reversed(range(1,28))) :
+    if y % 3 == 0 and y>=y2 :
+        print("     ",x1-i+1,"\t\t\t   ",y,"\t\t\t      ",(y+(x1-i+2)**(1/3))**0.25)
+        i+=1
+if y2==1 and x2==1:
+    print("     ",1,"\t\t\t   ",1,"\t\t\t      ",(1+(1+1)**(1/3))**0.25)    
+
+====================================================================================================================================
+
