@@ -1,0 +1,563 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace ap2_3
+{
+    public partial class fmMain : Form
+    {
+        public static int MDIchildFormNumber = 1;
+        public static bool aboutFormFlag = true;
+        
+        public fmMain()
+        {
+            InitializeComponent();
+            Text = "Головна програма";
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fmMDIChild MDIChildNew = new fmMDIChild();
+            MDIChildNew.MdiParent = this;
+            MDIChildNew.Text = "Window" + MDIchildFormNumber++;
+            MDIChildNew.TopMost = true;
+            MDIChildNew.Show();
+            MDIChildNew.BringToFront();
+            statusBarPanel1.Text = MDIChildNew.Text;
+            statusBar1.Text = MDIChildNew.Text;
+            statusBar1.ShowPanels = false;
+            saveAsToolStripMenuItem.Enabled = true;
+            closeToolStripMenuItem.Enabled = true;
+            toolStripMenuItem3.Enabled = true;
+            undoToolStripMenuItem.Enabled = true;
+            redoToolStripMenuItem.Enabled = true;
+            cutCtrlXToolStripMenuItem.Enabled = true;
+            copyToolStripMenuItem.Enabled = true;
+            pasteCtrlVToolStripMenuItem.Enabled = true;
+            insertImageToolStripMenuItem.Enabled = true;
+            searchToolStripMenuItem.Enabled = true;
+            findToolStripMenuItem.Enabled = true;
+            cascadeToolStripMenuItem.Enabled = true;
+            tileHorizontalToolStripMenuItem.Enabled = true;
+            tileVerticalToolStripMenuItem.Enabled = true;
+            arrangeIconsToolStripMenuItem.Enabled = true;
+            minimizeAllToolStripMenuItem.Enabled = true;
+            maximizeAllToolStripMenuItem.Enabled = true;
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ActiveMdiChild.Close();
+            if (ActiveMdiChild != null)
+                statusBar1.Text = ActiveMdiChild.Text;
+        }
+
+        private void cascadeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutMdi(MdiLayout.Cascade);
+        }
+
+        private void tileHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutMdi(MdiLayout.TileHorizontal);
+        }
+
+        private void tileVerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutMdi(MdiLayout.TileVertical);
+        }
+
+        private void arrangeIconsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LayoutMdi(MdiLayout.ArrangeIcons);
+        }
+
+        private void minimizeAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Form childForm in MdiChildren)
+                childForm.WindowState = FormWindowState.Minimized;
+        }
+
+        private void maximizeAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Form childForm in MdiChildren)
+                childForm.WindowState = FormWindowState.Maximized;
+        }
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            foreach (Form childForm in MdiChildren)
+                childForm.Close();
+            MDIchildFormNumber = 1;
+            saveAsToolStripMenuItem.Enabled = false;
+            closeToolStripMenuItem.Enabled = false;
+            toolStripMenuItem3.Enabled = false;
+            undoToolStripMenuItem.Enabled = false;
+            redoToolStripMenuItem.Enabled = false;
+            cutCtrlXToolStripMenuItem.Enabled = false;
+            copyToolStripMenuItem.Enabled = false;
+            pasteCtrlVToolStripMenuItem.Enabled = false;
+            insertImageToolStripMenuItem.Enabled = false;
+            searchToolStripMenuItem.Enabled = false;
+            findToolStripMenuItem.Enabled = false;
+            cascadeToolStripMenuItem.Enabled = false;
+            tileHorizontalToolStripMenuItem.Enabled = false;
+            tileVerticalToolStripMenuItem.Enabled = false;
+            arrangeIconsToolStripMenuItem.Enabled = false;
+            minimizeAllToolStripMenuItem.Enabled = false;
+            maximizeAllToolStripMenuItem.Enabled = false;
+        }
+
+        private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                //RichBox.Copy();
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                openFileDialog.Filter = "RichText Files (*.rtf)|*.rtf|All Files (*.*)|*.*";
+                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+                    RichBox.LoadFile(openFileDialog.FileName, RichTextBoxStreamType.RichText);
+            }
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                //RichBox.Copy();
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                saveFileDialog.Filter = "RichText Files (*.rtf)|*.rtf|All Files (*.*)|*.*";
+                saveFileDialog.FileName = "Новий документ";
+                if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+                    RichBox.SaveFile(saveFileDialog.FileName, RichTextBoxStreamType.RichText);
+            }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Copy();
+            }
+        }
+
+        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                ColorDialog colorDialog = new ColorDialog();
+                if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    RichBox.SelectionColor = colorDialog.Color;
+            }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fmAbout aboutForm = new fmAbout();
+            foreach (Form ff in Application.OpenForms)
+            {
+                if (ff.Text == "Про програму" || ff.WindowState == FormWindowState.Minimized)
+                {
+                    aboutFormFlag = false;
+                    ff.BringToFront();
+                    ff.WindowState = FormWindowState.Normal;
+                    break;
+                }
+                else
+                {
+                    aboutFormFlag = true;
+                }
+            }
+            if (aboutFormFlag)
+            {
+                aboutForm.StartPosition = FormStartPosition.CenterScreen;
+                aboutForm.ShowDialog(this);
+                aboutFormFlag = false;
+            }
+
+        }
+
+        private void toolBarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (toolBarToolStripMenuItem.Checked == true)
+            {
+                toolStrip1.Hide();
+                toolBarToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                toolStrip1.Show();
+                toolBarToolStripMenuItem.Checked = true;
+            }
+        }
+
+        private void statusBarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (statusBarToolStripMenuItem.Checked == false)
+            {
+                statusBar1.Show();
+                statusBarToolStripMenuItem.Checked = true;
+            }
+            else
+            {
+                statusBar1.Hide();
+                statusBarToolStripMenuItem.Checked = false;
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked == true)
+                button1.Visible = false;
+            else button1.Visible = true;
+
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked == false)
+                button2.Enabled = false;
+            else button2.Enabled = true;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            label1.Text = "мітка";
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            label1.Width = 32;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            label1.Width = 64;
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            label1.Width = 96;
+        }
+
+        private void fmMain_MdiChildActivate(object sender, EventArgs e)
+        {
+            if (ActiveMdiChild != null)
+            {
+
+                statusBar1.Text = ActiveMdiChild.Text;
+            }
+            if (ActiveMdiChild == null)
+            {
+                statusBar1.ShowPanels = true;
+                statusBar1.Text = "";
+                MDIchildFormNumber = 1;
+                saveAsToolStripMenuItem.Enabled = false;
+                closeToolStripMenuItem.Enabled = false;
+                toolStripMenuItem3.Enabled = false;
+                undoToolStripMenuItem.Enabled = false;
+                redoToolStripMenuItem.Enabled = false;
+                cutCtrlXToolStripMenuItem.Enabled = false;
+                copyToolStripMenuItem.Enabled = false;
+                pasteCtrlVToolStripMenuItem.Enabled = false;
+                insertImageToolStripMenuItem.Enabled = false;
+                searchToolStripMenuItem.Enabled = false;
+                findToolStripMenuItem.Enabled = false;
+                cascadeToolStripMenuItem.Enabled = false;
+                tileHorizontalToolStripMenuItem.Enabled = false;
+                tileVerticalToolStripMenuItem.Enabled = false;
+                arrangeIconsToolStripMenuItem.Enabled = false;
+                minimizeAllToolStripMenuItem.Enabled = false;
+                maximizeAllToolStripMenuItem.Enabled = false;
+            }
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            statusBar1.Panels[0].Text = DateTime.Now.ToString("HH:mm");
+        }
+
+        private void создатьToolStripButton_Click(object sender, EventArgs e)
+        {
+            fmMDIChild MDIChildNew = new fmMDIChild();
+            MDIChildNew.MdiParent = this;
+            MDIChildNew.Text = "Window" + MDIchildFormNumber++;
+            MDIChildNew.TopMost = true;
+            MDIChildNew.Show();
+            MDIChildNew.BringToFront();
+            statusBarPanel1.Text = MDIChildNew.Text;
+            statusBar1.Text = MDIChildNew.Text;
+            statusBar1.ShowPanels = false;
+
+            saveAsToolStripMenuItem.Enabled = true;
+            closeToolStripMenuItem.Enabled = true;
+            toolStripMenuItem3.Enabled = true;
+            undoToolStripMenuItem.Enabled = true;
+            redoToolStripMenuItem.Enabled = true;
+            cutCtrlXToolStripMenuItem.Enabled = true;
+            copyToolStripMenuItem.Enabled = true;
+            pasteCtrlVToolStripMenuItem.Enabled = true;
+            insertImageToolStripMenuItem.Enabled = true;
+            searchToolStripMenuItem.Enabled = true;
+            findToolStripMenuItem.Enabled = true;
+            cascadeToolStripMenuItem.Enabled = true;
+            tileHorizontalToolStripMenuItem.Enabled = true;
+            tileVerticalToolStripMenuItem.Enabled = true;
+            arrangeIconsToolStripMenuItem.Enabled = true;
+            minimizeAllToolStripMenuItem.Enabled = true;
+            maximizeAllToolStripMenuItem.Enabled = true;
+        }
+
+
+        private void insertImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            activeChild.MdiParent = this;
+
+            if (activeChild != null)
+            {
+                PictureBox pictureBox1 = null;
+                var ctls = Controls.Find("pictureBox1", true);
+                if (ctls.Length > 0)
+                {
+                    pictureBox1 = (PictureBox)ctls[0];
+                }
+
+                if (pictureBox1 != null)
+                {
+                    OpenFileDialog sfd = new OpenFileDialog();
+                    pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        pictureBox1.Image = Image.FromFile(sfd.FileName);
+                    }
+                }
+
+            }
+        }
+
+        private void открытьToolStripButton_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                //RichBox.Copy();
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                openFileDialog.Filter = "RichText Files (*.rtf)|*.rtf|All Files (*.*)|*.*";
+                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+                    RichBox.LoadFile(openFileDialog.FileName, RichTextBoxStreamType.RichText);
+            }
+        }
+
+        private void сохранитьToolStripButton_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                //RichBox.Copy();
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                saveFileDialog.Filter = "RichText Files (*.rtf)|*.rtf|All Files (*.*)|*.*";
+                saveFileDialog.FileName = "Новий документ";
+                if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+                    RichBox.SaveFile(saveFileDialog.FileName, RichTextBoxStreamType.RichText);
+            }
+        }
+
+        private void cutCtrlXToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Cut();
+            }
+        }
+
+        private void pasteCtrlVToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Paste();
+            }
+        }
+
+        private void вырезатьToolStripButton_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Cut();
+            }
+        }
+
+        private void копироватьToolStripButton_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Copy();
+            }
+        }
+
+        private void вставкаToolStripButton_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Paste();
+            }
+        }
+
+        private void colorToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                ColorDialog colorDlg = new ColorDialog();
+                if (colorDlg.ShowDialog() == DialogResult.OK)
+                    RichBox.SelectionColor = colorDlg.Color;
+            }
+        }
+
+        private void fontToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                FontDialog fontDlg = new FontDialog();
+                if (fontDlg.ShowDialog() == DialogResult.OK)
+                    RichBox.SelectionFont = fontDlg.Font;
+            }
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Undo();
+            }
+
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Redo();
+            }
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Undo();
+            }
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            Form activeChild = this.ActiveMdiChild;
+            if (activeChild != null)
+            {
+                RichTextBox RichBox = (RichTextBox)activeChild.ActiveControl;
+                RichBox.Redo();
+            }
+        }
+
+        private void searchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form news = ActiveMdiChild;
+            if (textBox1.Text != "")
+            {
+                if (news != null)
+                {
+                    RichTextBox RichBox = (RichTextBox)news.ActiveControl;
+                    int start = 0;
+                    int end = RichBox.Text.LastIndexOf(textBox1.Text);
+                    RichBox.SelectAll();
+                    RichBox.SelectionBackColor = Color.White;
+
+                    while (start < end)
+                    {
+                        RichBox.Find(textBox1.Text, start, RichBox.Text.Length, RichTextBoxFinds.MatchCase);
+                        RichBox.SelectionBackColor = Color.Yellow;                        
+                        start = RichBox.Text.IndexOf(textBox1.Text, start) + 1;
+
+                    }                   
+                }
+            }
+
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form news = ActiveMdiChild;
+            if (textBox2.Text != "")
+            {
+                if (news != null)
+                {
+                    RichTextBox RichBox = (RichTextBox)news.ActiveControl;                    
+                    string var = textBox2.Text;
+                    string var1 = RichBox.Text;                    
+                    RichBox.Rtf = RichBox.Rtf.Replace(textBox1.Text, var);
+                }
+            }
+                    
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "")
+            {
+                Form news = ActiveMdiChild;
+                RichTextBox RichBox = (RichTextBox)news.ActiveControl;
+                RichBox.SelectAll();
+                RichBox.SelectionBackColor = Color.White;
+            }
+        }
+    }
+}
