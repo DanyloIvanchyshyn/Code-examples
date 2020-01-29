@@ -1,3 +1,23 @@
+//* The task was to:
+
+1. Create a base class POINT with the coordinates of the point on the plane.
+Define a virtual method of moving (coordinate changes) points.
+2. Define initialization constructors, copy, and destructors
+methods for changing and reading the values ​​of fields in this class.
+3. Overload the operation to add coordinates - to subtract,
+operation * to multiply by a factor, operation / to divide by a coefficient,
+object assignment operation =, Input >> and Output << operations
+objects.
+4. Create derivative classes: CIRCLE and SECTOR. Define functions
+moving a figure within a plane. Identify constructors and destructors, methods or operator functions of I / O.
+5. Within the class hierarchy, construct a polymorphic cluster based on
+the virtual method of moving the figure. Demonstrate the mechanism of late
+linking.
+6. Develop a class of CIRCUIT FIGURE containing an array of objects of the CIRCLE class.
+Identify the cluster of images with the largest number of intersecting circles.
+7. To work with an array of objects, build and use a cluster. *//
+
+
 #include <iostream>
 #include <cstdlib>
 #include <iomanip>
