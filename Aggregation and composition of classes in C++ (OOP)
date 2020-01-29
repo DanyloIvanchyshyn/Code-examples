@@ -1,0 +1,331 @@
+#include <iostream>
+#include <conio.h>
+#include <string>
+#include <cstdlib>
+#include <algorithm>
+using namespace std;
+
+class Student {
+	//поля класу
+private:
+	string surname;
+	unsigned int number_of_gradebook;
+	int size;
+	unsigned int *p;
+public:
+	//звичайний конструктор
+	Student(string s, unsigned int n, int sz, unsigned int *q) {
+		surname = s;
+		size = sz;
+		number_of_gradebook = n;
+		p = new unsigned int[size];
+		for (int i = 0; i < size; i++) {
+			if (q[i] <= 5 && q[i] > 0 )	p[i]=q[i];
+			else exit(-1);
+		}
+	}
+	//конструктор за замовучуванням
+	Student() {
+		surname = " ";
+		number_of_gradebook = 0;
+		size = 5;
+		p = new unsigned int[size];
+		for (int i = 0; i < 5; i++) {
+			p[i] = 0;
+		}
+	}
+	//конструктор копіювання
+	Student(const Student& a) {
+		surname = a.surname;
+		number_of_gradebook = a.number_of_gradebook;
+		size = a.size;
+		p = new unsigned int[size];
+		for (int i = 0; i < size; i++) {
+			if (a.p[i] <= 5 && a.p[i] > 0)	p[i] = a.p[i];
+			else exit(-1);
+		}
+	}
+	//перевантаження операції присвоєння з копіюванням
+	Student& operator=(const Student& obj) {
+		if (this != &obj) {
+			delete[] p;
+			surname = obj.surname;
+			number_of_gradebook = obj.number_of_gradebook;
+			size = obj.size;
+			p = new unsigned int [size];
+			for (int i = 0; i < size; i++)
+				p[i] = obj.p[i];
+		}
+		return *this;
+	}
+	//перевантаження операції "!="
+	int operator!=(const Student& obj) {
+		if (this == &obj) {
+			return -1;
+		}
+		else return 1;
+	}
+	//деструктор
+	~Student() { delete[] p; }
+
+	//метод отримання прізвища
+	string GetSurname() const { return surname; }
+	//метод отримання розміру масиву оцінок
+	int GetSize() const { return size; }
+	//метод отримання номера залікової книжки
+	unsigned int GetNumOfGrdb() const { return number_of_gradebook;  }
+	//метод виведення оцінок
+	void GetMarks() const {
+		for (int i = 0; i < size; i++) {
+			cout << p[i] << "\t";
+		}
+		cout << endl;
+	}
+	//метод отримання оцінки
+	unsigned int GetSingleMark (int i) const {
+		if (i > 0 && i <= size) {
+			return p[i - 1];
+			cout << endl;
+		}
+		else exit(-3);
+	}
+	//метод перевірки існування студента
+	int CheckStudent() {
+		if (this->surname == Student().surname && this->number_of_gradebook == Student().number_of_gradebook && this->size == Student().size && this->p != 0) return -1;
+		else return 1;
+	}
+	//метод вивидення інформації про студента 
+	void Print_Student();
+	//метод присвоєння прізвища студенту
+	string &SetSurname();
+	//метод присвоєння номера залікової книжки
+	unsigned int &SetNmbOfGrd();
+	//метод присвоєння оцінки студентові
+	unsigned int &SetSingleMark(int n);
+};
+//реалізація методу вивидення інформації про студента 
+void Student::Print_Student() {
+	cout << "Student: " << surname << "\t" << number_of_gradebook << endl;
+	GetMarks();
+	cout << endl;
+}
+//реалізація методу вивидення інформації про студента 
+string& Student::SetSurname() { return surname; }
+//реалізація методу присвоєння прізвища студенту 
+unsigned int& Student::SetNmbOfGrd() { return number_of_gradebook; }
+//реалізація методу присвоєння оцінки студентові
+unsigned int& Student::SetSingleMark(int n) {
+	if (n > 0 && n <= size) {
+		return p[n - 1];
+	}
+	else exit(-1);
+}
+
+class Group {
+	//поля класу
+private:
+	int count;
+	Student *s;
+public:
+	//звичайний конструктор
+	Group(int n) : count(n) {
+		s = new Student[count];
+		for (int i = 0; i < count; i++) s[i] = Student();
+	}
+	//конструктор за замовчуванням
+	Group() {
+		count = 32;
+		s = new Student[count];	
+		for (int i = 0; i < count; i++) s[i] = Student();
+	}
+	//конструктор копіювання
+	Group(const Group& a) {
+		count = a.count;
+		s = new Student[count];
+		for (int i = 0; i < count; i++)
+			s[i] = a.s[i];
+	}
+	//перевантаження операції присвоєння з копіюванням
+	Group& operator=(const Group& obj) {
+		if (this != &obj) {
+			delete[] s;
+			count = obj.count;
+			s = new Student[count];
+			for (int i = 0; i < count; i++)
+				s[i] = obj.s[i];
+		}
+		return *this;
+	}
+	//деструктор
+	~Group() { if (s) delete[] s; }
+
+	//метод додавання студента в групу
+	void AddStudent(Student& st, int i);
+	//метод виведення і-го студента
+	void GetStudentI(int i);
+	//метод видалення студента
+	void DeleteStudent(int i);
+	//метод знаходження середньіх оцінок студентів
+	double* FindAverageMark();
+	//метод виведення середніх оцінок студента
+	void PrintAvMarks();
+	//метод виведення п'яти найкращих за середнім балом студентів
+	void PrintFiveBest();
+
+	//метод виведення інформації про групу на екран
+	void output() {
+		cout << endl << "-----------------------------------";
+		for (int i = 0; i < count; i++) {
+			if (s[i].CheckStudent() > 0) {
+				cout << endl;
+				s[i].Print_Student();
+			}
+			else { continue; }
+		}
+		cout << "-----------------------------------" << endl << endl;
+	}
+};
+//реалізація методу додавання студента в групу
+void Group::AddStudent(Student& st, int i) {
+	if (s[i - 1] != st) {
+		if (i > 0 && i <= count) {
+			if (s[i - 1].CheckStudent() < 0) s[i - 1] = st;
+			else exit(-4);
+		}
+	}
+};
+//реалізація методу виведення і-го студента
+void Group::GetStudentI(int i) {
+	if (i > 0 && i <= count) {
+		if (s[i - 1].CheckStudent() > 0) {
+			cout << endl;
+			s[i - 1].Print_Student();
+		}
+		else exit(-6);
+	}
+}
+//реалізація методу видалення студента
+void Group::DeleteStudent(int i) {
+	if (i > 0 && i <= count) {
+		if (s[i - 1].CheckStudent() > 0)
+			s[i - 1] = Student();
+		else exit(-7);
+	}
+};
+//реалізація методу знаходження середніх оцінок студентів
+double* Group::FindAverageMark() {
+	double *mrk = new double [count];
+	for (int i = 0; i < count; i++) {
+		mrk[i] = 0;
+	}
+	for (int i = 0; i < count; i++) {
+		double sum = 0;
+		double average_mark = 0.0;
+		int tmpsz = s[i].GetSize();
+		for (int j = 1; j <= tmpsz; j++) {
+			sum += s[i].GetSingleMark(j);
+		}
+		average_mark = sum / tmpsz;
+		mrk[i] += average_mark;
+	}
+	return mrk;
+}
+//реалізація методу виведення середніх оцінок студента
+void Group::PrintAvMarks() {
+	double *res = FindAverageMark();
+	for (int i = 0; i < count; i++) {
+		cout << endl << "Student's number " << i+1 << " average mark is: " << res[i] << endl;
+	}
+	cout << endl;
+	delete[] res;
+}
+//реалізація методу виведення п'яти найкращих за середнім балом студентів
+void Group::PrintFiveBest() {
+	int flag = 0;
+	double *res1 = FindAverageMark();
+	double *res2 = FindAverageMark();
+	std::sort(res2, res2 + count, greater <>());
+	if (count < 5) {
+		for (int i = 0; i < count; i++) {
+			for (int j = 0; j < count; j++) {
+				if (res2[i] == res1[j]) {
+					if (flag < 5) {
+						cout << s[j].GetSurname() << "\t" << res2[i] << endl;
+						res1[j] = 0;
+						flag++;
+					} 
+					else break;
+				}
+			}
+			if (flag >= 5) {
+				flag = 0;
+				break;
+			}
+	    }
+	}
+	else for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < count; j++) {			
+				if (res2[i] == res1[j]) {
+					if (flag < 5) {
+						cout << s[j].GetSurname() << "\t" << res2[i] << endl;
+						res1[j] = 0;
+						flag++;
+					}
+					else break;
+				}
+		}
+		if (flag >= 5) {
+			flag = 0;
+			break;
+		}
+	}
+	cout << endl;
+	delete[] res1;
+	delete[] res2;
+}
+//головна функція
+int main() {
+	unsigned int arr1[] = {3,4,4,5,3};
+	unsigned int arr2[] = {3,5,2,3,4};
+	unsigned int arr3[] = {3,5,4,5,3};
+	unsigned int arr4[] = {5,3,2,2,5};
+	unsigned int arr5[] = {2,5,3,5,3};
+	unsigned int arr6[] = {5,3,5,2,4};
+	Student A("Ivanov", 45368400, 5, arr1);
+	Student B("Volov", 28943490, 5, arr2);
+	Student C("Andrush", 47643900, 5, arr3);
+	Student D("Bojohon", 98774090, 5, arr4);
+	Student E("Lekiv", 38772095, 5, arr5);
+	Student F("Bekir", 12554460, 5, arr6);
+	Student cp(F);
+	cp.Print_Student(); 
+	cout << endl;
+	cp.SetSurname() = "SurnameSet";
+	cp.SetNmbOfGrd() = 5555555;
+	cout << cp.GetSurname() << " " << cp.GetNumOfGrdb() << endl;
+	cp.GetMarks();
+	cout << endl;
+	cp.Print_Student();
+	A.Print_Student();	
+	A.SetSingleMark(1) = 5;
+	cout << A.GetSingleMark(1) << endl << endl;
+	A.GetMarks();
+	Group gg(6);
+	gg.AddStudent(A, 1);
+	gg.AddStudent(B, 2);
+	gg.AddStudent(C, 3);
+	gg.AddStudent(D, 4);
+	Group g2;
+	g2 = gg;
+	g2.output();
+	gg.AddStudent(F, 6);
+	gg.AddStudent(E, 5);
+	gg.output();
+	gg.PrintAvMarks();
+	gg.PrintFiveBest();
+	gg.DeleteStudent(2);
+	gg.output();
+	gg.GetStudentI(1);
+	system("pause");
+	return 0;       
+  }
